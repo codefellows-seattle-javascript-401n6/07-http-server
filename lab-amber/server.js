@@ -12,7 +12,7 @@ let cowText = 'I need something good to say!';
 const server = http.createServer((req, res) => {
   req.url = url.parse(req.url);
   req.url.query = queryString.parse(req.url.query);
-  
+
   if (req.method === 'GET') {
     if (req.url.pathname === '/') {
       req.on('error', err => {
@@ -46,23 +46,23 @@ const server = http.createServer((req, res) => {
       res.end();
     } else if (req.url.pathname === '/cowsay') {
       req.on('error', err => {
-      console.error(err);
+        console.error(err);
       });
 
-    let userText = req.url.query.text;
-    let userEyes = req.url.query.eyes;
-    let userTongue = req.url.query.tongue;
-    cowText = cowsay.say({
-      text: userText,
-      e: userEyes,
-      T: userTongue,
-    });
+      let userText = req.url.query.text;
+      let userEyes = req.url.query.eyes;
+      let userTongue = req.url.query.tongue;
+      cowText = cowsay.say({
+        text: userText,
+        e: userEyes,
+        T: userTongue,
+      });
 
-    res.writeHead(200, {
-      'Content-Type': 'text/html'
-    });
-  
-    res.write(`
+      res.writeHead(200, {
+        'Content-Type': 'text/html'
+      });
+
+      res.write(`
     <head>
       <title>Cowsay</title>
     </head>
@@ -86,14 +86,40 @@ const server = http.createServer((req, res) => {
       </mail>
     </body>
     `);
-    res.end();
-  } else {
-    let message = cowsay.say({text: 'bad request\ntry localhost:3000/cowsay with a proper body'});
-    res.writeHead(400, {'Content-Type': 'text/plain'});
-    res.write(message);
-    res.end();
+      res.end();
+    } else {
+      let message = cowsay.say({ text: 'error. invalid request\ntry localhost:3000/cowsay with a proper text query' });
+      res.writeHead(400, { 'Content-Type': 'text/plain' });
+      res.write(message);
+      res.end();
+    }
+  } else if (req.method === 'POST') {
+    if (req.url.pathname === '/api/cowsay') {
+      req.on('error', err => {
+        console.error(err);
+      });
+      let userText = req.url.query.text;
+      let userEyes = req.url.query.eyes;
+      let userTongue = req.url.query.tongue;
+      cowText = cowsay.say({
+        text: userText,
+        e: userEyes,
+        T: userTongue,
+      });
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      });
+      res.write(JSON.stringify({
+        content: cowText,
+      }));
+      res.end();
+    } else {
+      let message = cowsay.say({ text: 'error. invalid request\ntry localhost:3000/api/cowsay with a proper text query' });
+      res.writeHead(400, { 'Content-Type': 'text/plain' });
+      res.write(message);
+      res.end();
+    }
   }
-}
 
 });
 
