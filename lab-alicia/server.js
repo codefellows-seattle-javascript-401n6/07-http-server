@@ -4,8 +4,7 @@ const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
 const cowsay = require('cowsay');
-const fs = require('fs');
-const parseBody = require(`${dirname}/lib/parse-body.js`);
+const parseBody = require('./lib/parse-body.js');
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
@@ -16,67 +15,100 @@ const server = http.createServer((req, res) => {
     // console.log('request method:', req.method);
     // console.log('request headers:', req.headers);
 
-    if (req.method === 'GET' && req.url.pathname === '/') {
-        fs.readFile('index.html', (err, data) => {
-            if (err) {
-                res.writeHead(404, 'Bad Request', {'Content-Type': 'text/plain'});
-                res.write(cowsay.say({text: 'bad request'}))
-            }
-            res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-            res.write('Hello!');
-            res.end();
-         });
+    let home = `<!DOCTYPE html>
+    <html>
+        <head>
+            <title> cowsay </title>  
+        </head>
+        <body>
+            <header>
+                <nav>
+                    <ul> 
+                        <li><a href="/cowsay">cowsay</a></li>
+                    </ul>
+                </nav>
+            <header>
+            <main>
+                <!-- project description -->
+            </main>
+        </body>
+    </html>`
+
+    let getCowsay = (message) => {
+    return `<!DOCTYPE html>
+        <html>
+            <head>
+                <title> cowsay </title>
+            </head>
+            <body>
+                <h1> cowsay </h1>
+            <pre>${cowsay.say({text: message})}            
+            </pre>
+            </body>
+        </html>`
     };
 
-    if (req.method === 'GET' && req.url.pathname === '/cowsay') {
-        fs.readFile('index.html', (err, data) => {
-       if (err) {
-           res.writeHead(404, 'Bad Request', {'Content-Type': 'text/plain'});
-           res.write(cowsay.say({text: 'bad request'}))
-       }
-        if (req.url.query.text) {
-            let cowTalk = req.url.query['text'];
-            res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-        res.write(data);
+    if (req.method === 'GET' && req.url.pathname === '/') {
+        res.writeHead(200, 'OK', {
+            'Content-Type': 'text/html'
+        });
+        res.write(home);
         res.end();
-        };
-    });
+    };
+
+    if (req.method === 'GET' && req.url.pathname === '/cowsay' && !req.url.query.text) {
+        let say = req.url.query.text;
+            res.writeHead(200, 'OK', {
+                'Content-Type': 'text/html'
+        });
+        res.write(getCowsay('I need something good to say!'));
+        res.end();
+    };
+    if (req.method === 'GET' && req.url.pathname === '/cowsay' && req.url.query.text) {
+            let say = req.url.query.text;
+            res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
+            res.write(getCowsay(say));
+            res.end();
+    };
 
     if (req.method === 'GET' && req.url.pathname === '/api/cowsay') {
-        fs.readFile('index.html', (err, data) => {
-            if (err) {
-                res.writeHead(404, 'Bad Request', {'Content-Type': 'text/html'});
-                res.write(cowsay.say({text: 'bad request'}));
-                res.end();
-            }
-            if (req.url.query.text) {
-                let cowTalk = req.url.query['text'];
-                res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-             res.write(data);
-             res.end();
-         };
-    });
-
-    if (req.method === 'POST' && req.url.pathname === 'api/cowsay') {
-        parseBody(req, (err) => {
-            if (err) return console.error(err);
+        if (!req.url.query.text) {
+            res.writeHead(400, 'Error', {
+                'Content-Type': 'text/json'
+            });
+            res.write('{"error": "invalid request: text query required"}');
+            res.end();
+            return;
+        };
+        let say = req.url.query.text;
+        res.writeHead(200, 'OK', {
+            'Content-Type': 'text/json'
         });
-        fs.readFile('index.html', (err, data) => {
-            if (err) {
-                res.writeHead(404, 'Bad Request', {'Content-Type': 'text/html'});
-                res.write(cowsay.say({text: 'bad request'}));
-                res.end();
-            }
-            if (data['text']) {
-                let cowTalk = data['text'];
-                console.log(cowTalk);
-                res.writeHead(200, 'OK', {'Content-Type': 'text/html'});
-                res.write(cowsay.say({text: cowTalk}));
-                res.end();
-            }
-         });
+        res.write(JSON.stringify({"content": say}));
+        res.end();
     };
-    res.end();
+
+    if(req.method === 'POST' || req.method === 'PUT' && req.url.pathname === '/api/cowsay') {
+        parseBody(req, (err, body) => {
+        if (body.text === null) {
+            res.writeHead(400, 'Error', {'Content-Type': 'text/json'});
+            res.write('{"error": "invalid request: text query required"}');
+            res.end();
+            return;
+        }
+        if (body === null) {
+            res.writeHead(400, 'Error', {'Content-Type': 'text/json'});
+            res.write('{"error": "invalid request: body required"}');
+            res.end();
+            return;
+        }
+
+            let data = JSON.stringify(body);
+            res.writeHead(200, 'OK', {'Content-Type': 'text/json'});
+            res.write(getCowsay(data));
+            res.end();
+        })
+    };
 });
 
 server.listen(PORT, () => {
