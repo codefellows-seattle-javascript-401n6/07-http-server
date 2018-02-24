@@ -36,5 +36,72 @@ http://localhost:3000/api/cowsay?text=<what you want your cow to say>&eyes=<how 
 ```
 Proper POST requests will return the html content for your cow.
 
+### Tested settings
+COWS:
+* sheep
+* dragon
+* cow (leave blank for this default)
+
+EYES:
+* Oo
+* <<
+* >>
+* pp
+* @@
+
+TONGUE:
+* U
+* O
+* L
+
 ### Invalid pathnames
-Will return text and 400 message from the cow.
+Get requests using http queries will return error messages from the cow. Post request will return object error messages.
+
+#### Example GET error messages:
+localhost:3000/cows
+```
+ ____________________________________________________
+( error. invalid request                             )
+( try localhost:3000/cowsay with a proper text query )
+ ----------------------------------------------------
+        o   ^__^
+         o  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+```
+
+http://localhost:3000/cowsay?comment=hello
+```
+ _______________________________
+< I need something good to say! >
+ -------------------------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+```
+
+#### Example PUT error messages:
+http://localhost:3000/api/cows
+400 bad request
+```
+{
+    "error": "invalid request: please use api/cowsay"
+}
+```
+
+No body in the request. 400 bad request
+```
+{
+    "error": "invalid request: body required"
+}
+```
+
+Request body asks for "comment" instead of "text". 400 bad request
+```
+{
+    "error": "invalid request: text query required"
+}
+```

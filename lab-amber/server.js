@@ -71,7 +71,6 @@ const server = http.createServer((req, res) => {
         userEyes = 'oo';
         cowText = cowsay.say({
           text: userText,
-          cow: userCow,
           e: userEyes,
         });
       } else {
@@ -81,7 +80,7 @@ const server = http.createServer((req, res) => {
         userTongue = req.url.query.tongue;
         cowText = cowsay.say({
           text: userText,
-          cow: userCow,
+          f: userCow,
           e: userEyes,
           T: userTongue,
         });
@@ -157,6 +156,13 @@ const server = http.createServer((req, res) => {
           res.end();
         }
       });
+    } else {
+      let message = JSON.stringify({
+        error: 'invalid request: please use api/cowsay',
+      });
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.write(message);
+      res.end();
     }
   }
 
