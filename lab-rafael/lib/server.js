@@ -3,7 +3,8 @@
 const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
-const fs = require('fs');
+const bodyParser = require('./bodyParser.js');
+const cowsay = require('cowsay');
 
 const server = http.createServer((req, res) => {
   req.url = url.parse(req.url);
@@ -54,20 +55,61 @@ const server = http.createServer((req, res) => {
   }
 
   if(req.method === 'GET' && req.url.pathname === '/cowsay' && !req.url.query.text) {
-    let say = 'I need something good to say!';
-    cowsay.cow = cowsay.cow.replace(/<(.*?)\>/, `< ${say} >`);
     res.writeHead(200, {'Content-Type': 'text/html'});
+    let say = 'I need something to say';
+    cowsay.cow = cowsay.cow.replace(/<(.*?)\>/, `< ${say} >`);
     res.write(cowsay.top + cowsay.cow + cowsay.bottom);
     res.end();
   }
 
   if(req.method === 'GET' && req.url.pathname === '/cowsay' && req.url.query.text) {
      let say = req.url.query.text;
-     console.log(say);
      cowsay.cow = cowsay.cow.replace(/<(.*?)\>/, `< ${say} >`);
      res.writeHead(200, {'Content-Type': 'text/html'});
      res.write(cowsay.top + cowsay.cow + cowsay.bottom);
      res.end();
+  }
+
+  if(req.method === 'GET' && req.url.pathname === '/api/cowsay') {
+    if(!req.url.query.text) {
+      res.writeHead(400, {'Content-Type': 'text/json'});
+      res.write('{"error": "invalid request: text query required"}');
+      res.end();
+      return;
+    }
+
+    let say = req.url.query.text;
+    let data = JSON.stringify({content: say});
+    res.writeHead(200, {'Content-Type': 'text/json'});
+    res.write(data);
+    res.end();
+  }
+
+  if(req.method === 'POST' && req.url.pathname === '/api/cowsay') {
+    bodyParser(req, (err, body) => {
+      if (body.length === 0) {
+        res.writeHead(400, {'Content-Type': 'text/json'});
+        res.write('{"error": "invalid request: body required"}');
+        res.end();
+        return;
+      }
+
+      let bodyParsed = JSON.parse(body);
+
+      if (!bodyParsed['text']) {
+        res.writeHead(400, {'Content-Type': 'text/json'});
+        res.write('{"error": "invalid request: text query required"}');
+        res.end();
+        return;
+      }
+      let text = bodyParsed.text;
+      let data = JSON.stringify({content: text});
+
+      res.writeHead(200, {'Content-Type': 'text/json'});
+      res.write(data);
+      console.log(data);
+      res.end();
+   });
   }
 });
 
