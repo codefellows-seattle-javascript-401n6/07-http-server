@@ -5,6 +5,7 @@ const url = require('url');
 const querystring = require('querystring');
 const cowsay = require('cowsay');
 const parseBody = require('./lib/parse-body.js');
+let message = '';
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
@@ -12,8 +13,6 @@ const server = http.createServer((req, res) => {
     req.url.query = querystring.parse(req.url.query);
     console.log('request url:', req.url);
     console.log('request query:', req.url.query);
-    // console.log('request method:', req.method);
-    // console.log('request headers:', req.headers);
 
     let home = `<!DOCTYPE html>
     <html>
@@ -29,7 +28,7 @@ const server = http.createServer((req, res) => {
                 </nav>
             <header>
             <main>
-                <!-- project description -->
+                'I built an http server using the cowsay module.'
             </main>
         </body>
     </html>`
@@ -42,7 +41,7 @@ const server = http.createServer((req, res) => {
             </head>
             <body>
                 <h1> cowsay </h1>
-            <pre>${cowsay.say({text: message})}            
+            <pre>${message}            
             </pre>
             </body>
         </html>`
@@ -80,11 +79,22 @@ const server = http.createServer((req, res) => {
             res.end();
             return;
         };
-        let say = req.url.query.text;
+        let text = req.url.query.text;
+        if (req.url.query.f) {
+            let f = req.url.query.f 
+            message = {
+                text: text,
+                f: f
+            }
+        } else {
+                message = {
+                    text: text
+            }
+        }
         res.writeHead(200, 'OK', {
             'Content-Type': 'text/json'
         });
-        res.write(JSON.stringify({"content": say}));
+        res.write(cowsay.say(message));
         res.end();
     };
 
@@ -102,7 +112,6 @@ const server = http.createServer((req, res) => {
             res.end();
             return;
         }
-
             let data = JSON.stringify(body);
             res.writeHead(200, 'OK', {'Content-Type': 'text/json'});
             res.write(getCowsay(data));
