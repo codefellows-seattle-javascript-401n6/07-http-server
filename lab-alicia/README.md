@@ -1,6 +1,7 @@
 # Welcome to Cowsay
 ### Author: Alicia Lycan
 
+## Introduction:
 Cowsay is an application for developing skills to build an http server incorporating a restful API and the cowsay npm package.
 
 ## Installment:
