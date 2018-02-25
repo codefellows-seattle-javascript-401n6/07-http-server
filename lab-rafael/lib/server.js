@@ -11,6 +11,14 @@ const server = http.createServer((req, res) => {
   req.url.query = querystring.parse(req.url.query);
   console.log('url', req.url);
   console.log('url query', req.url.query.text);
+
+  let message = {
+    text: req.url.query.text || 'I need something good to say!',
+    f:  req.url.query.f || '' ,
+    e: req.url.query.e || '',
+    T: req.url.query.T || '',
+  }
+
   let home = `
   <!DOCTYPE html>
     <html>
@@ -32,21 +40,21 @@ const server = http.createServer((req, res) => {
     </html>`;
 
 
-  let cowsay = {
-      top: `<!DOCTYPE html>
+  let cowsayText = (message) => {
+   return `<!DOCTYPE html>
       <html>
         <head>
           <title> cowsay </title>
         </head>
         <body>
          <h1> cowsay </h1>
-         <pre>`,
-      cow: `__\n< I need something good to say! >\n  --\n         \\   ^__^ \n          \\  (oo)\\_______\n             (__)\\       )\\/\\\n                 ||----w |\n                 ||     ||\n</pre>`,
-      bottom: `
+         <pre>
+            ${message}
          </pre>
       </body>
       </html>`
-  }
+  };
+
 
   if(req.method === 'GET' && req.url.pathname === '/') {
     res.writeHead(200, {'Content-Type': 'text/html'});
@@ -56,17 +64,13 @@ const server = http.createServer((req, res) => {
 
   if(req.method === 'GET' && req.url.pathname === '/cowsay' && !req.url.query.text) {
     res.writeHead(200, {'Content-Type': 'text/html'});
-    let say = 'I need something to say';
-    cowsay.cow = cowsay.cow.replace(/<(.*?)\>/, `< ${say} >`);
-    res.write(cowsay.top + cowsay.cow + cowsay.bottom);
+    res.write(cowsayText(cowsay.say(message)));
     res.end();
   }
 
-  if(req.method === 'GET' && req.url.pathname === '/cowsay' && req.url.query.text) {
-     let say = req.url.query.text;
-     cowsay.cow = cowsay.cow.replace(/<(.*?)\>/, `< ${say} >`);
+  if(req.method === 'GET' && req.url.pathname === '/cowsay' && req.url.query) {
      res.writeHead(200, {'Content-Type': 'text/html'});
-     res.write(cowsay.top + cowsay.cow + cowsay.bottom);
+     res.write(cowsayText(cowsay.say(message)));
      res.end();
   }
 
@@ -78,8 +82,8 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    let say = req.url.query.text;
-    let data = JSON.stringify({content: say});
+    //let say = req.url.query.text;
+    let data = JSON.stringify(message);
     res.writeHead(200, {'Content-Type': 'text/json'});
     res.write(data);
     res.end();
@@ -103,11 +107,16 @@ const server = http.createServer((req, res) => {
         return;
       }
       let text = bodyParsed.text;
-      let data = JSON.stringify({content: text});
+      message = {
+        content: bodyParsed.text,
+        f: bodyParsed.f || '',
+        e: bodyParsed.e || '',
+        T: bodyParsed.T || '',
+      }
+      let data = JSON.stringify(message);
 
       res.writeHead(200, {'Content-Type': 'text/json'});
       res.write(data);
-      console.log(data);
       res.end();
    });
   }
