@@ -1,0 +1,15 @@
+{
+  "name": "lab-brandon",
+  "version": "1.0.0",
+  "description": "Vanilla HTTP server",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Brandon Buchholz",
+  "license": "ISC"
+}
