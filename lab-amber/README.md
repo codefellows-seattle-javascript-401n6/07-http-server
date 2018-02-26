@@ -32,9 +32,9 @@ Proper GET requests will return html with the cow displayed.
 
 ### For POST requests, use:
 ```
-http://localhost:3000/api/cowsay?text=<what you want your cow to say>&eyes=<how you want the cow's eyes to look>&tongue=<Your cow's eyes>
+http://localhost:3000/api/cowsay?
 ```
-Proper POST requests will return the html content for your cow.
+Proper POST requests will return JSON
 
 ### Tested settings
 COWS:
