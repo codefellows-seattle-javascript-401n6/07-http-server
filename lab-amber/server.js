@@ -111,7 +111,7 @@ const server = http.createServer((req, res) => {
           <h1>Project Description</h1>
           <p>This project is an exercise in building a Vanilla JavaScript server and RESTful API's with the fun NPM Cowsay package.</p>
         <section>
-      </mail>
+      </main>
     </body>
     `);
       res.end();
