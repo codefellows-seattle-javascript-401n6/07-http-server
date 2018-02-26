@@ -22,7 +22,9 @@ const querystring = require('querystring');
      req.url = url.parse(req.url);
      req.url.query = querystring.parse(req.url.query);
      console.log('METHOD:', req.method);
+     console.log('url:', req.url);
 
+if (req.method === 'GET'){
      let html = `
      <head>
        <title> cowsay </title>  
@@ -46,6 +48,7 @@ const querystring = require('querystring');
      });
      res.write(html,'utf-8');
      res.end();
+    }
     });
 
  const PORT = process.ENV || 3000;
