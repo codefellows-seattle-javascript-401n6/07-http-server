@@ -107,4 +107,4 @@ Request body asks for "comment" instead of "text". 400 bad request
 ```
 
 ## Collaboration
-Special thanks to JB Tellez for the server tests using SuperAgent and Cheerio at test/server.test.js
+Special thanks to JB Tellez for writing the server tests using SuperAgent and Cheerio at [test/server.test.js](https://github.com/JB-Tellez). Find his original repl at [here](https://repl.it/@JonathynTellez/Vanilla-HTTP-Tests).
