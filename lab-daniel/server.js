@@ -3,39 +3,50 @@
 const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
+const fs = require('fs');
+const cowsay = require('cowsay');
 const PORT = process.ENV || 3000;
+
 const server = http.createServer((req, res) => {
     req.url = url.parse(req.url);
     req.url.query = querystring.parse(req.url.query);
     console.log('url: ', req.url);
 
-    req.on('data', (buffer) => {
-        console.log('Buffer: ', buffer.toString());
-    })
-    res.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title> cowsay </title>  
-      </head>
-      <body>
-       <header>
-         <nav>
-           <ul> 
-             <li><a href="/cowsay">cowsay</a></li>
-           </ul>
-         </nav>
-       <header>
-       <main>
-         <!-- project description -->
-       </main>
-      </body>
-    </html>`);
+    if(req.method === 'GET' && req.url.query === '/') {
+        //insert callback function (res)
+    }
+
+    if(req.method === 'GET' && req.url.query === '/cowsay/') {
+        //insert callback function (res)
+    }
     
-    res.end();
-})
+    
+    if(req.method === 'POST' && req.url.query === '/api/cowsay/') {
+        //insert callback function (res)
+    }
+});
+
+// function handleGet(res, res) {
+//     if (err){
+//     res.writeHead(404)
+//     write(cowsay.say) -> bad file
+//     res.end
+//     return
+// }
+    //write header(200) -> It works
+    //write(cowsay.say) -> good file {text: 'it works!'}
+    //res.end
+
+//function cowsayget(res){
+    //write head(200 ) {content type: works}
+    //res.head(cowsay.say) -> good file {yaaap: yaaap}
+    //res.end
+//}
+
+//function cowpost(res)
+// parseBody
 
 
 server.listen(PORT, () => {
-    console.log(`Your port is on: ${PORT}`);
+    console.log(`Your port is on localhost:${PORT}`);
 })
