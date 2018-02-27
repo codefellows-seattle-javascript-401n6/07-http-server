@@ -105,3 +105,6 @@ Request body asks for "comment" instead of "text". 400 bad request
     "error": "invalid request: text query required"
 }
 ```
+
+## Collaboration
+Special thanks to JB Tellez for the server tests using SuperAgent and Cheerio at test/server.test.js

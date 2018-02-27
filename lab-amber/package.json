@@ -15,6 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cowsay": "^1.2.1"
+    "cheerio": "^1.0.0-rc.2",
+    "cowsay": "^1.2.1",
+    "superagent": "^3.8.2"
   }
 }
