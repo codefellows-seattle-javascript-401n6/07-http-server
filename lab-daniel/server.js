@@ -5,6 +5,7 @@ const url = require('url');
 const querystring = require('querystring');
 const fs = require('fs');
 const cowsay = require('cowsay');
+const bodyParse = require('./lib/body-parse.js');
 const PORT = process.ENV || 3000;
 
 const server = http.createServer((req, res) => {
@@ -48,5 +49,5 @@ const server = http.createServer((req, res) => {
 
 
 server.listen(PORT, () => {
-    console.log(`Your port is on localhost:${PORT}`);
+    console.log(`Your port is on http://localhost:${PORT}`);
 })
