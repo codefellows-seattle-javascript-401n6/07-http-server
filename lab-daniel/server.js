@@ -16,6 +16,13 @@ const server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url.pathname === '/') {
         handleGet(res);
     }
+    else if (req.method === 'GET' && req.url.pathname === '/cowsay') {
+        cowsayGet(res);
+    }else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.write('Invalid file path' + req.url.pathname);
+        res.end();
+    }
 });
 
 function handleGet(res) {
@@ -31,6 +38,10 @@ function handleGet(res) {
     });
 }
 
+function cowsayGet(res) {
+    res.write(cowsay.say( { text: 'Hello, my name is Sir Loin' }));
+    res.end();
+}
 server.listen(PORT, () => {
     console.log(`Your port is on http://localhost:${PORT}`);
 })
