@@ -14,5 +14,9 @@ module.exports = function(req, callback){
         } catch(err){
             callback(err);
         }
-    })
+    });
+
+    req.on('error', function(err) {
+        callback(err);
+    });
 }

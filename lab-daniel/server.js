@@ -16,8 +16,13 @@ const server = http.createServer(function (req, res) {
     if (req.method === 'GET' && req.url.pathname === '/') {
         handleGet(res);
     }
+
     else if (req.method === 'GET' && req.url.pathname === '/cowsay') {
         cowsayGet(res);
+    }
+    
+    else if (req.method === 'POST' && req.url.pathname === '/api/cowsay') {
+        cowsayPost(req, res)
     }else {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.write('Invalid file path' + req.url.pathname);
@@ -42,6 +47,20 @@ function cowsayGet(res) {
     res.write(cowsay.say( { text: 'Hello, my name is Sir Loin' }));
     res.end();
 }
+
+function cowsayPost(req, res) {
+    bodyParse(req, function (err, body){
+        if(err) {
+            return console.log(err);
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        let cowText = cowsay.say({ text: body.text});
+        let json = JSON.stringify({ content: cowText });
+        res.write(json);
+        res.end();
+    });
+}
+
 server.listen(PORT, () => {
     console.log(`Your port is on http://localhost:${PORT}`);
-})
+});
