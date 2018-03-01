@@ -4,7 +4,7 @@ const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
 const fs = require('fs');
-
+const cowsay = require('cowsay');
 
 
  const server = http.createServer((req, res) =>{
@@ -16,15 +16,15 @@ const fs = require('fs');
 if (req.method === 'GET' && req.url.pathname === '/'){
     handelGit(res, req);
     
-}else{
+}else if(req.method === 'GET' && req.url.pathname === '/cowsay'){
+    handelGitCowsay(res,req);
+}
+else{
     res.writeHead(404, {'Content-Type':'text/plain'});
-    res.writeHead('I hecka borked'+ req.url.pathname);
+    res.write('I hecka borked'+ req.url.pathname);
     res.end();
 };
 
-// if (req.method === 'GET' && req.url.pathname === '/cowsay'){
-//     handelGit(req, res);
-// };
 
 // if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
 //     handelGit(req, res);
@@ -45,22 +45,12 @@ function handelGit(res,req){
     });
 }
 
-// function handelGitCowsay(res,req){
+function handelGitCowsay(res, req){
+    res.writeHead(200,{'Content-Type':'text/plain'});
+     res.write(cowsay.say({text:'Am I working?'}));
+     res.end();
+}
 
-//     res.writeHead(200,{
-//         'Content-Type':'text/html; charset=utf-8'
-//     });
-//     res.write(html,'utf-8');
-//     res.end();
-// }
-// function handelPostCowsay(res,req){
-
-//     res.writeHead(200,{
-//         'Content-Type':'text/html; charset=utf-8'
-//     });
-//     res.write(html,'utf-8');
-//     res.end();
-// }
 
  const PORT = process.ENV || 3000;
  server.listen(PORT,() =>{
