@@ -50,7 +50,7 @@ const server = http.createServer((request, response) => {
           <body>
             <h1> cowsay </h1>
             <pre>`);
-    response.write('cowsay.say({text:' );
+    response.write('cowsay.say({text: ');
     response.write(text);
     response.write('}');
     //   <!-- cowsay.say({text: req.query.text}) -->
@@ -60,8 +60,34 @@ const server = http.createServer((request, response) => {
     response.end();
   };
   if (request.method === 'POST') {
-      
-  }
+    if (request.url.path === '/api/cowsay') {
+    //some POST response here
+      console.log('Processing POST request');
+      var body = '';
+      request.on('data', function(data) {
+        body += data;
+      });
+      request.on('end', function() {
+        if (body === '') {
+          //error 400
+        } else {
+          var post = querystring.parse(body);
+          if (post.text === null) {
+            //error 400
+          } else {
+            console.log('POST', post.text);
+            response.writeHead(200, {'Content-Type': 'text/JSON'});
+            response.write(JSON.stringify({"content": post.text }));//??
+            response.end();
+          };
+        };
+      });
+    } else {
+      console.log('404 error');
+      response.writeHead(404, 'Resource Not Found', {'Content-Type': 'text/html'});
+      response.end();
+    };
+  };
 
 //   response.writeHead(200, {'Content-Type': 'text/html'});
 //   response.write('testing');
