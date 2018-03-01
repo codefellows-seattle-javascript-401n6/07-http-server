@@ -3,55 +3,71 @@
 const http = require('http');
 const url = require('url');
 const querystring = require('querystring');
-// built into node//
+const fs = require('fs');
 
 
-// const bodyParse = (res, callback) => {
-//     if(req.method === 'POST' || 'PUT'){
-//         let body = ''
-//         req.on('data', (buf) => {
-//             body += buf.toString();
-//         });
-//         req.on('end', () => callback(null, body));
-//         req.on('error', (err) => callback(err))
-//     } else{
-//         callback(null, '{}')
-//     }
-// }
+
  const server = http.createServer((req, res) =>{
      req.url = url.parse(req.url);
      req.url.query = querystring.parse(req.url.query);
      console.log('METHOD:', req.method);
      console.log('url:', req.url);
 
-if (req.method === 'GET'){
-     let html = `
-     <head>
-       <title> cowsay </title>  
-     </head>
-     <body>
-      <header>
-        <nav>
-          <ul> 
-            <li><a href="/cowsay">cowsay</a></li>
-          </ul>
-        </nav>
-      <header>
-      <main>
+if (req.method === 'GET' && req.url.pathname === '/'){
+    handelGit(res, req);
+    
+}else{
+    res.writeHead(404, {'Content-Type':'text/plain'});
+    res.writeHead('I hecka borked'+ req.url.pathname);
+    res.end();
+};
 
-        <!-- project description -->
-      </main>
-     </body>`
+// if (req.method === 'GET' && req.url.pathname === '/cowsay'){
+//     handelGit(req, res);
+// };
 
-     res.writeHead(200,{
-         'Content-Type':'text/html; charset=utf-8'
-     });
-     res.write(html,'utf-8');
-     res.end();
-    }
+// if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
+//     handelGit(req, res);
+// };
+});
+function handelGit(res,req){
+    fs.readFile('fileData.html',(err,data) => {
+        console.log('here is file data',data.toString())
+        if(err){
+            res.writeHead(401,{'Content-Type':'text/plain'});
+            res.write({text:'401 it hecka borked'});
+            res.end();
+            return
+        }else
+        res.writeHead(200,{'Content-Type':'text/html'});
+         res.write(data.toString());
+         res.end();
     });
+}
+
+// function handelGitCowsay(res,req){
+
+//     res.writeHead(200,{
+//         'Content-Type':'text/html; charset=utf-8'
+//     });
+//     res.write(html,'utf-8');
+//     res.end();
+// }
+// function handelPostCowsay(res,req){
+
+//     res.writeHead(200,{
+//         'Content-Type':'text/html; charset=utf-8'
+//     });
+//     res.write(html,'utf-8');
+//     res.end();
+// }
 
  const PORT = process.ENV || 3000;
  server.listen(PORT,() =>{
      console.log('http://localhost'+PORT);
  })
+
+
+
+
+ 
