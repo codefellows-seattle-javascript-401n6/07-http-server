@@ -10,6 +10,8 @@ const cowsay = require('cowsay');
  const server = http.createServer((req, res) =>{
      req.url = url.parse(req.url);
      req.url.query = querystring.parse(req.url.query);
+     var cowText = cowsay.say(req.url.query);
+     console.log('cowtext', cowText)
      console.log('METHOD:', req.method);
      console.log('url:', req.url);
 
@@ -17,18 +19,20 @@ if (req.method === 'GET' && req.url.pathname === '/'){
     handelGit(res, req);
     
 }else if(req.method === 'GET' && req.url.pathname === '/cowsay'){
-    handelGitCowsay(res,req);
-}
-else{
-    res.writeHead(404, {'Content-Type':'text/plain'});
-    res.write('I hecka borked'+ req.url.pathname);
-    res.end();
-};
+   
+    handelGitCowsay(res,req, cowText);
 
-
-// if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
-//     handelGit(req, res);
+} else if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
+        handelPost(res, req);
+    };
+// else{
+//     res.writeHead(404, {'Content-Type':'text/plain'});
+//     res.write('I hecka borked'+ req.url.pathname);
+//     res.end();
 // };
+
+
+
 });
 function handelGit(res,req){
     fs.readFile('fileData.html',(err,data) => {
@@ -45,10 +49,32 @@ function handelGit(res,req){
     });
 }
 
-function handelGitCowsay(res, req){
-    res.writeHead(200,{'Content-Type':'text/plain'});
-     res.write(cowsay.say({text:'Am I working?'}));
+function handelGitCowsay(res, req, cowText){
+fs.readFile('one.html',(err,one)=>{
+    fs.readFile('two.html',(err,two)=>{
+         res.writeHead(200,{'Content-Type':'text/html'});
+     res.write(one.toString());
+     res.write(cowText);
+     res.write(two.toString());
      res.end();
+    })
+})
+   
+}
+
+function handelGit(res,req){
+    fs.readFile('part1.html',(err,data) => {
+        console.log('here is file data',data.toString())
+        if(err){
+            res.writeHead(401,{'Content-Type':'text/plain'});
+            res.write({text:'401 it hecka borked'});
+            res.end();
+            return
+        }else
+        res.writeHead(200,{'Content-Type':'text/html'});
+         res.write(data.toString());
+         res.end();
+    });
 }
 
 
