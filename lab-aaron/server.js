@@ -70,10 +70,12 @@ const server = http.createServer((request, response) => {
       request.on('end', function() {
         if (body === '') {
           //error 400
+          response.writeHead(400, {'error': 'invalid request: body required'});
         } else {
           var post = querystring.parse(body);
           if (post.text === null) {
             //error 400
+            response.writeHead(400, {'error': 'invalid request: text query required'});
           } else {
             console.log('POST', post.text);
             response.writeHead(200, {'Content-Type': 'text/JSON'});
@@ -88,7 +90,6 @@ const server = http.createServer((request, response) => {
       response.end();
     };
   };
-
 //   response.writeHead(200, {'Content-Type': 'text/html'});
 //   response.write('testing');
 //   response.end();
