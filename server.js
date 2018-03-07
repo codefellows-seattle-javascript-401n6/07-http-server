@@ -23,16 +23,13 @@ if (req.method === 'GET' && req.url.pathname === '/'){
     handelGitCowsay(res,req, cowText);
 
 } else if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
-        bodyParse(req, (err, body) =>{
-        
-        };
+    handelPost(res, req, cowText, (err, body));
     };
 // else{
 //     res.writeHead(404, {'Content-Type':'text/plain'});
 //     res.write('I hecka borked'+ req.url.pathname);
 //     res.end();
 // };
-
 
 
 });
@@ -71,25 +68,43 @@ function handelGitCowsay(res, req, cowText) {
     })
 }
 
-const bodyParse = (req, callback) => {
-    if(req.method === 'POST'|| req.method ==='PUT'){
-        let body =''
-        req.on('data', (buf) => {
-            body += buf.toString();
-        });
-        req.on('end', () => callback(null, body));
-        req.on('error', (err) => callback(err))
-    }else{
-        callback(null,'{}')
-    }
+
+function handelPost(res, req){
+    bodyParse(req, function(err,body){
+       if(err){
+           console.error(err);
+       }
+       console.log('BODY',body);
+       res.writeHead(200,{'content-type':'application/json'});
+       let cowtext = cow.say({text: body});
+       let json = JSON.stringify({content:cowtext});
+       res.write(json);
+       res.end();
+    });
+   
 }
+
+function bodyParse(req, callback){
+    req.body = '';
+    req.on('data', function(data){
+        req.body += data.toString();
+    });
+
+    req.on('end', function(){
+        try{
+            req.body = JSON.parse(req.body);
+            callback(null, req.body);
+        }catch (err){
+            callback(err);
+        };
+    });
+};
+
 
  const PORT = process.ENV || 3000;
  server.listen(PORT,() =>{
      console.log('http://localhost'+PORT);
  })
-
-
 
 
  
