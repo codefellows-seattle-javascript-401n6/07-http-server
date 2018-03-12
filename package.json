@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/ixnp/07-http-server#readme",
   "dependencies": {
-    "cowsay": "^1.2.1"
+    "cowsay": "^1.2.1",
+    "superagent": "^3.8.2"
   }
 }
