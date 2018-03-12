@@ -5,25 +5,25 @@ const url = require('url');
 const querystring = require('querystring');
 const fs = require('fs');
 const cowsay = require('cowsay');
-
+const bodyParse = require('./lib/bodyparser.js');
 
  const server = http.createServer((req, res) =>{
      req.url = url.parse(req.url);
      req.url.query = querystring.parse(req.url.query);
      var cowText = cowsay.say(req.url.query);
-     console.log('cowtext', cowText)
+    //  console.log('cowtext', cowText)
      console.log('METHOD:', req.method);
      console.log('url:', req.url);
 
 if (req.method === 'GET' && req.url.pathname === '/'){
     handelGit(res, req);
     
-}else if(req.method === 'GET' && req.url.pathname === '/cowsay'){
+}else if(req.method === 'GET' && req.url.pathname === '/api/cowsay'){
    
-    handelGitCowsay(res,req, cowText);
-
-} else if (req.method === 'POST' && req.url.pathname === '/api/cowsay'){
-    handelPost(res, req, cowText, (err, body));
+    handelGitCowsay(res,req,cowText);
+    // && req.url.pathname === '/api/cowsay'
+} else if(req.method === 'POST' && req.url.pathname === '/api/cowsay' ){
+    handelPost(req, res, cowText);
     };
 // else{
 //     res.writeHead(404, {'Content-Type':'text/plain'});
@@ -33,19 +33,9 @@ if (req.method === 'GET' && req.url.pathname === '/'){
 
 
 });
-function handelGit(res,req){
-    fs.readFile('fileData.html',(err,data) => {
-        console.log('here is file data',data.toString())
-        if(err){
-            res.writeHead(401,{'Content-Type':'text/plain'});
-            res.write({text:'401 it hecka borked'});
-            res.end();
-            return
-        }else
-        res.writeHead(200,{'Content-Type':'text/html'});
-         res.write(data.toString());
-         res.end();
-    });
+function handelGit(res,req,cowText){
+
+    handelGitCowsay(res,req,cowText);
 }
 
 function handelGitCowsay(res, req, cowText) {
@@ -69,36 +59,21 @@ function handelGitCowsay(res, req, cowText) {
 }
 
 
-function handelPost(res, req){
+function handelPost(req,res, cowText){
+ 
     bodyParse(req, function(err,body){
        if(err){
            console.error(err);
        }
        console.log('BODY',body);
-       res.writeHead(200,{'content-type':'application/json'});
-       let cowtext = cow.say({text: body});
-       let json = JSON.stringify({content:cowtext});
+       res.writeHead(200,{'Content-type':'application/json'});
+       let cowtext = cowsay.say({text: body});
+       let json = JSON.stringify({content: cowtext});
+       console.log('post ran!');
        res.write(json);
        res.end();
-    });
-   
+    });  
 }
-
-function bodyParse(req, callback){
-    req.body = '';
-    req.on('data', function(data){
-        req.body += data.toString();
-    });
-
-    req.on('end', function(){
-        try{
-            req.body = JSON.parse(req.body);
-            callback(null, req.body);
-        }catch (err){
-            callback(err);
-        };
-    });
-};
 
 
  const PORT = process.ENV || 3000;
