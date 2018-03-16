@@ -10,20 +10,18 @@ const bodyParse = require('./lib/bodyparser.js');
  const server = http.createServer((req, res) =>{
      req.url = url.parse(req.url);
      req.url.query = querystring.parse(req.url.query);
-     var cowText = cowsay.say(req.url.query);
+     let text = req.url.query.text;
+     if(!text) text = 'Existiance is pain :D';
+     let cowText = cowsay.say({text});
     //  console.log('cowtext', cowText)
      console.log('METHOD:', req.method);
-     console.log('url:', req.url);
-
+     console.log('url:', req.url.text);
+     console.log('req.url.pathname',req.url.pathname);
 if (req.method === 'GET' && req.url.pathname === '/'){
-    handelGit(res, req);
-    
-}else if(req.method === 'GET' && req.url.pathname === '/api/cowsay'){
-   
-    handelGitCowsay(res,req,cowText);
+  return  handelGet(res, req, cowText);
     // && req.url.pathname === '/api/cowsay'
 } else if(req.method === 'POST' && req.url.pathname === '/api/cowsay' ){
-    handelPost(req, res, cowText);
+    handelPost(req, res);
     };
 // else{
 //     res.writeHead(404, {'Content-Type':'text/plain'});
@@ -33,12 +31,8 @@ if (req.method === 'GET' && req.url.pathname === '/'){
 
 
 });
-function handelGit(res,req,cowText){
 
-    handelGitCowsay(res,req,cowText);
-}
-
-function handelGitCowsay(res, req, cowText) {
+function handelGet(res, req, cowText) {
 
     fs.readFile('one.html', (err, one) => {
         fs.readFile('two.html', (err, two) => {
@@ -59,16 +53,13 @@ function handelGitCowsay(res, req, cowText) {
 }
 
 
-function handelPost(req,res, cowText){
- 
-    bodyParse(req, function(err,body){
+function handelPost(req,res){
+    bodyParse(req, function(err,reqBody){
        if(err){
-           console.error(err);
+        return console.error(err);
        }
-       console.log('BODY',body);
        res.writeHead(200,{'Content-type':'application/json'});
-       let cowtext = cowsay.say({text: body});
-       let json = JSON.stringify({content: cowtext});
+       let json = JSON.stringify({content: req.body.text});
        console.log('post ran!');
        res.write(json);
        res.end();
