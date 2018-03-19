@@ -13,7 +13,7 @@ const server = http.createServer((req, res) => {
     let text = req.url.query.text;
     if (!text) text = 'Existiance is pain :D';
     let cowText = cowsay.say({ text });
-    //  console.log('cowtext', cowText)
+
     console.log('METHOD:', req.method);
     console.log('url:', req.url.text);
     console.log('req.url.pathname', req.url.pathname);
@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
 
 });
 
-function resError(res, req, msg='sorry', num=404){
+function resError(res, req, msg, num){
     res.writeHead(400,{'Conten-Type':'text/plain'});
     res.write('I heck broked'+ msg);
     res.end();
