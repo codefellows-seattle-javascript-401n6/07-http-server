@@ -33,7 +33,7 @@ and stop methods should each return a promise that resolves on success and
 rejects on error.
 
 ###### GET /
-When a client makes a GET request to / the server should send baack html with
+When a client makes a GET request to / the server should send back html with
 a project description and a anchor to /cowsay.
 
 ``` html
